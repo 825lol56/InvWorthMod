@@ -1,0 +1,16 @@
+[
+{
+  "modid": "invworth",
+  "name": "InvWorth",
+  "description": "Lets you check your inventory's worth and other useful features.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["825lol56"],
+  "credits": "Inforno, alot of credit to Inforno",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
