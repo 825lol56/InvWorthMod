@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 public class InvWorth {
     public static final String MODID = "invworth";
     public static final String NAME = "InvWorth";
-    public static final String VERSION = "1.2";
+    public static final String VERSION = "1.3";
     public static final Logger yapper = LogManager.getLogger(MODID);
     public static InvWorth instance;
     public static String prefix = EnumChatFormatting.GREEN + "[" + EnumChatFormatting.RED + "825bot56" + EnumChatFormatting.GREEN + "] ";
@@ -41,6 +41,7 @@ public class InvWorth {
         new handler();
         ClientCommandHandler.instance.registerCommand(new InvWorthCommand());
         ClientCommandHandler.instance.registerCommand(new InvLessWorth());
+        ClientCommandHandler.instance.registerCommand(new InvWorthCfgCmd());
         MinecraftForge.EVENT_BUS.register(new VersionCheck());
         MinecraftForge.EVENT_BUS.register(new InvWorthCheck());
         MinecraftForge.EVENT_BUS.register(new InvLessWorth());

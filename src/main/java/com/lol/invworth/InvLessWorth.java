@@ -8,14 +8,16 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.inventory.Slot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class InvLessWorth extends CommandBase {
@@ -36,6 +38,11 @@ public class InvLessWorth extends CommandBase {
     @Override
     public boolean canCommandSenderUseCommand(ICommandSender sender) {
         return true;
+    }
+
+    @Override
+    public List<String> getCommandAliases() {
+        return Arrays.asList("leastworth", "lws", "lw");
     }
 
     @Override
@@ -78,17 +85,14 @@ public class InvLessWorth extends CommandBase {
 
         int guiLeft, guiTop;
         try {
-            Field guiLeftField = GuiContainer.class.getDeclaredField("guiLeft");
-            Field guiTopField = GuiContainer.class.getDeclaredField("guiTop");
-            guiLeftField.setAccessible(true);
-            guiTopField.setAccessible(true);
-            guiLeft = (int) guiLeftField.get(guiContainer);
-            guiTop = (int) guiTopField.get(guiContainer);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+            guiLeft = ReflectionHelper.getPrivateValue(GuiContainer.class, guiContainer, "guiLeft", "field_147003_i");
+            guiTop = ReflectionHelper.getPrivateValue(GuiContainer.class, guiContainer, "guiTop", "field_147009_r");
+        } catch (Exception e) {
+            shouldHighlight = false;
             return;
         }
 
-        // Renders the green status text right above the inventory layout bounds
+        // Green status text remains right above the inventory box frame
         mc.fontRendererObj.drawString("§aLeastItemWorth mode ON!!", guiLeft + 4, guiTop - 12, 0xFFFFFF);
 
         List<Slot> validSlots = new ArrayList<>();
@@ -96,6 +100,29 @@ public class InvLessWorth extends CommandBase {
             if (slot != null && slot.inventory == mc.thePlayer.inventory) {
                 int index = slot.getSlotIndex();
                 if (index >= 0 && index < 36 && slot.getHasStack()) {
+                    ItemStack stack = slot.getStack();
+
+                    // Feature 1: Skip if the item has no recorded selling price
+                    float[] worth = InvWorthCheck.getWorth(stack);
+                    if (worth == null || worth[1] <= 0.0f) {
+                        continue;
+                    }
+
+                    // Feature 2: Skip if the item's registry name is on the config blacklist
+                    if (stack.getItem() != null && InvWorthConfig.ignoredItems != null) {
+                        String registryName = Item.itemRegistry.getNameForObject(stack.getItem()).toString();
+                        boolean isBlacklisted = false;
+                        for (String blacklistedName : InvWorthConfig.ignoredItems) {
+                            if (registryName.equalsIgnoreCase(blacklistedName.trim())) {
+                                isBlacklisted = true;
+                                break;
+                            }
+                        }
+                        if (isBlacklisted) {
+                            continue;
+                        }
+                    }
+
                     validSlots.add(slot);
                 }
             }
@@ -115,8 +142,8 @@ public class InvLessWorth extends CommandBase {
             return Float.compare(val1, val2);
         });
 
-        // Highlights downsized to 4 slots maximum
-        int limit = Math.min(6, validSlots.size());
+        // Highlights limited to a maximum of 5 slots
+        int limit = Math.min(5, validSlots.size());
         for (int i = 0; i < limit; i++) {
             Slot slot = validSlots.get(i);
             int x = guiLeft + slot.xDisplayPosition;

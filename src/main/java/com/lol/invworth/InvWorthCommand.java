@@ -5,6 +5,7 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.item.ItemStack;
+import com.lol.invworth.InvWorthCfgCmd;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -19,7 +20,7 @@ public class InvWorthCommand extends CommandBase {
 
     @Override
     public String getCommandUsage(ICommandSender sender) {
-        return "/invworth [smart]";
+        return "/invworth [smart]|[help]";
     }
 
     @Override
@@ -30,13 +31,15 @@ public class InvWorthCommand extends CommandBase {
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, net.minecraft.util.BlockPos pos) {
         if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, "smart");
+            return getListOfStringsMatchingLastWord(args, "smart", "help");
         }
         return null;
     }
 
     @Override
     public void processCommand(ICommandSender sender, String[] args) throws CommandException {
+        if (args.length > 0 && args[0].equalsIgnoreCase("help")) {
+            new InvWorthCfgCmd().sendHelpMenu(Minecraft.getMinecraft()); return;}
         boolean smart = args.length > 0 && args[0].equalsIgnoreCase("smart");
         displayWorth(smart);
     }

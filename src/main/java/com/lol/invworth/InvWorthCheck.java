@@ -60,6 +60,7 @@ public class InvWorthCheck {
             yapper.warn("Failed to Load Shop Data:", e);
         }
     }
+
     public static float[] getWorth(ItemStack stack) {
         if (stack == null)
             return null;
