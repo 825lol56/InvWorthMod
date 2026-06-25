@@ -17,16 +17,21 @@ import org.apache.logging.log4j.Logger;
 public class InvWorth {
     public static final String MODID = "invworth";
     public static final String NAME = "InvWorth";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.2";
     public static final Logger yapper = LogManager.getLogger(MODID);
-    public static boolean credits = false;
     public static InvWorth instance;
     public static String prefix = EnumChatFormatting.GREEN + "[" + EnumChatFormatting.RED + "825bot56" + EnumChatFormatting.GREEN + "] ";
     public static Minecraft mc = Minecraft.getMinecraft();
 
+    /** ****** <<< USEFUL LINKS! >>> ************
+     Version link: https://pastebin.com/Hw5BGppe
+     Prices link: https://pastebin.com/im3M4zfB
+     ******************************************/
+
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         instance = this;
+        InvWorthConfig.init(event);
         yapper.info("{} is loading!", NAME);
     }
 
@@ -35,8 +40,12 @@ public class InvWorth {
         yapper.info("{} is initializing!", NAME);
         new handler();
         ClientCommandHandler.instance.registerCommand(new InvWorthCommand());
+        ClientCommandHandler.instance.registerCommand(new InvLessWorth());
         MinecraftForge.EVENT_BUS.register(new VersionCheck());
-        MinecraftForge.EVENT_BUS.register(new InvWorthCheck()); InvWorthCheck.loadShopData();
+        MinecraftForge.EVENT_BUS.register(new InvWorthCheck());
+        MinecraftForge.EVENT_BUS.register(new InvLessWorth());
+        InvWorthCheck.loadShopData();
+
 
 
     }

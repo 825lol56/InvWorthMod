@@ -1,7 +1,5 @@
 package com.lol.invworth;
 
-import com.lol.invworth.InvWorth;
-import com.lol.invworth.InvWorthCheck;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
